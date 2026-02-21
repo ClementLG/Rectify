@@ -18,6 +18,7 @@ worker_class = "gthread"
 threads = 4
 
 # ── Worker lifecycle ─────────────────────────────────────────────────────────
+worker_tmp_dir = "/dev/shm"  # Required for Docker read_only root filesystem
 max_requests = 1000
 max_requests_jitter = 50
 timeout = 120

@@ -10,7 +10,7 @@ services:
       - APP_ENV=production # Set to development for local dev
       #- SECRET_KEY=${SECRET_KEY:-change-me-in-production} # Set up your own secret key for production. Random is generated at build time if not provided.
     tmpfs:
-      - /tmp:size=64M
+      - /tmp:size=64M,mode=1777
       - /app/uploads:size=512M,uid=1000,gid=1000,mode=0700
     read_only: true
     security_opt:
