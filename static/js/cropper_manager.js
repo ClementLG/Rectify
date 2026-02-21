@@ -169,6 +169,15 @@ const CropperManager = (() => {
     }
 
     /**
+     * Get the cropped canvas element for instant previewing.
+     * @returns {HTMLCanvasElement|null}
+     */
+    function getCroppedCanvas() {
+        if (!cropper) return null;
+        return cropper.getCroppedCanvas();
+    }
+
+    /**
      * Replace the image source without rebuilding the cropper.
      * @param {string} url
      */
@@ -194,6 +203,7 @@ const CropperManager = (() => {
         reset,
         setAspectRatio,
         getCroppedBlob,
+        getCroppedCanvas,
         replace,
         isActive,
     };

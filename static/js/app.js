@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let originalHeight = 0;
     let aspectLocked = false;
     let lastCropPayload = null;  // stored for quality re-export
+    let pendingResultFilename = null; // stored for Continue Editing
 
     // ── Helpers ─────────────────────────────────────────────────────────
 
@@ -76,6 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
         overlaySvg.innerHTML = "";
         currentFilename = null;
         currentSessionId = null;
+        pendingResultFilename = null;
+        fileInput.value = "";
     }
 
     /**
@@ -332,15 +335,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 qualitySlider.value = 100;
                 qualityValue.textContent = "100%";
 
-                // Show preview modal
                 const downloadUrl = `/api/download/${result.session_id}/${result.filename}`;
-                previewImage.src = downloadUrl;
                 btnDownload.href = downloadUrl;
                 btnDownload.download = result.filename;
+
+                // Show instant client-side preview
+                const canvas = CropperManager.getCroppedCanvas();
+                if (canvas) {
+                    previewImage.src = canvas.toDataURL("image/png");
+                } else {
+                    previewImage.src = downloadUrl;
+                }
+
                 downloadModal.classList.add("is-active");
 
-                // Update for continued editing
-                currentFilename = result.filename;
+                // Store for "Continue Editing" without modifying active state yet
+                // This prevents state drift if the user closes the modal.
+                pendingResultFilename = result.filename;
             })
             .catch(err => {
                 hideLoading();
@@ -410,12 +421,14 @@ document.addEventListener("DOMContentLoaded", () => {
     btnContinue.addEventListener("click", () => {
         closeModal();
         // Reload the cropped image into the editor
-        if (currentFilename && currentSessionId) {
+        if (pendingResultFilename && currentSessionId) {
+            currentFilename = pendingResultFilename;
             editorImage.src = `/api/download/${currentSessionId}/${currentFilename}`;
             editorImage.onload = () => {
                 CropperManager.destroy();
                 initEditor();
             };
+            pendingResultFilename = null;
         }
     });
 

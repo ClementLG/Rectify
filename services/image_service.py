@@ -113,18 +113,21 @@ class ImageService:
             PIL.UnidentifiedImageError: If the file is not a valid image.
         """
         with Image.open(source_path) as img:
-            # Preserve EXIF orientation
-            img = _apply_exif_orientation(img)
+            # NOTE: do NOT apply EXIF orientation here — the browser
+            # already auto-rotates, and Cropper.js computes its
+            # coordinates against the displayed (oriented) image.
 
-            # 1. Rotate (before crop, matching Cropper.js behaviour)
-            img = cls.rotate(img, params.rotate)
+            # 1. Flip first (Cropper.js coordinates assume flips are
+            #    applied before rotation)
+            img = cls.flip(img, params.flip_h, params.flip_v)
 
-            # 2. Crop
+            # 2. Rotate — Pillow rotates counter-clockwise, Cropper.js
+            #    reports clockwise, so we negate the angle.
+            img = cls.rotate(img, -params.rotate)
+
+            # 3. Crop at the coordinates reported by Cropper.js
             img = cls.crop(img, params.x, params.y,
                            params.width, params.height)
-
-            # 3. Flip
-            img = cls.flip(img, params.flip_h, params.flip_v)
 
             # Save with user-chosen quality (clamped 1–100)
             q = max(1, min(100, params.quality))
