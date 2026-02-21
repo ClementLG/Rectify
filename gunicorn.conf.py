@@ -28,6 +28,6 @@ graceful_timeout = 30
 preload_app = True
 
 # ── Logging ──────────────────────────────────────────────────────────────────
-accesslog = "-"
+accesslog = None  # Disabled to prevent healthcheck and traffic log spam
 errorlog = "-"
-loglevel = "info"
+loglevel = "warning"
