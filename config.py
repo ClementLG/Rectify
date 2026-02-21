@@ -18,8 +18,11 @@ UPLOAD_FOLDER: Path = BASE_DIR / "uploads"
 MAX_CONTENT_LENGTH: int = 10 * 1024 * 1024  # 10 MB
 ALLOWED_EXTENSIONS: set[str] = {"png", "jpg", "jpeg", "webp"}
 
-# ── Cleanup service ──────────────────────────────────────────────────────────
-CLEANUP_INTERVAL: int = 1800  # seconds (30 minutes)
+# ── Cleanup service / File lifecycle ─────────────────────────────────────────
+CLEANUP_INTERVAL: int = 1800          # seconds between sweeps (30 minutes)
+MAX_STORAGE_MB: int = 500             # maximum total size of uploads/ (MB)
+RETENTION_SECONDS: int = 3600         # max age before a session is eligible for deletion (1 hour)
+STORAGE_WARN_PERCENT: int = 80        # proactive eviction threshold (% of MAX_STORAGE_MB)
 
 # ── Default overlay shown on editor load ─────────────────────────────────────
 DEFAULT_OVERLAY: str = "rule-of-thirds"

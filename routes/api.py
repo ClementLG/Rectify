@@ -7,6 +7,7 @@ All routes are prefixed with ``/api``.
 
 from __future__ import annotations
 
+import logging
 import uuid
 from pathlib import Path
 from typing import Any
@@ -21,8 +22,11 @@ from flask import (
 )
 from PIL import Image
 
+import config
 from services.image_service import CropParams, ImageService
 from utils.file_validator import sanitize_filename, validate_extension, validate_magic_bytes
+
+logger = logging.getLogger(__name__)
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -47,12 +51,13 @@ def _get_session_dir() -> Path:
 def upload() -> tuple[Any, int]:
     """Handle image file upload.
 
-    Validates the file extension and binary signature, saves it to the
-    session directory, and returns image metadata.
+    Validates the file extension and binary signature, checks available
+    storage capacity, saves the file to the session directory, and returns
+    image metadata.
 
     Returns:
         JSON ``{"filename", "width", "height", "session_id"}`` on success
-        (HTTP 200), or an error object (HTTP 400).
+        (HTTP 200), or an error object (HTTP 400 / 507).
     """
     if "file" not in request.files:
         return jsonify({"error": "No file provided."}), 400
@@ -73,6 +78,31 @@ def upload() -> tuple[Any, int]:
         clean_name: str = sanitize_filename(file.filename)
     except ValueError:
         return jsonify({"error": "Invalid filename."}), 400
+
+    # ── Storage capacity guard ────────────────────────────────────────────
+    upload_root: Path = Path(current_app.config["UPLOAD_FOLDER"])
+    max_bytes: int = config.MAX_STORAGE_MB * 1024 * 1024
+
+    try:
+        from cleanup_service import get_directory_size, run_sweep
+
+        current_size: int = get_directory_size(upload_root)
+        if current_size >= max_bytes:
+            logger.warning(
+                "Storage at capacity (%s / %s) — triggering emergency sweep.",
+                current_size, max_bytes,
+            )
+            run_sweep()
+            # Re-check after sweep
+            current_size = get_directory_size(upload_root)
+            if current_size >= max_bytes:
+                return jsonify({
+                    "error": "Server storage is full. Please try again later.",
+                }), 507
+    except Exception:
+        # If the capacity check itself fails, allow the upload anyway —
+        # better to accept a file than to block the user on a monitoring error.
+        logger.exception("Storage capacity check failed — allowing upload.")
 
     # Prefix with UUID fragment to avoid collisions
     unique_name = f"{uuid.uuid4().hex[:8]}_{clean_name}"

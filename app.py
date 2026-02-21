@@ -45,6 +45,13 @@ def create_app() -> Flask:
     app.register_blueprint(views_bp)
     app.register_blueprint(api_bp)
 
+    # ── Start cleanup daemon ─────────────────────────────────────────────
+    import threading
+    from cleanup_service import run_loop
+
+    cleanup_thread = threading.Thread(target=run_loop, name="cleanup-daemon", daemon=True)
+    cleanup_thread.start()
+
     return app
 
 
