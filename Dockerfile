@@ -34,7 +34,8 @@ COPY --chown=rectify:rectify . .
 # Create uploads directory and ensure /tmp has the correct sticky-bit permissions
 RUN mkdir -p /app/uploads && \
     chown rectify:rectify /app/uploads && \
-    chmod 1777 /tmp
+    chmod 1777 /tmp && \
+    chmod 1777 /app/uploads
 
 # Drop to non-root user
 USER rectify
