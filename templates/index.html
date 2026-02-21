@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- CSRF token for API calls -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="default-overlay" content="{{ default_overlay }}">
+
+<!-- ── Navigation ──────────────────────────────────────────────────────── -->
+<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item app-logo" href="/">
+            <i class="fas fa-crop-alt"></i>
+            <span class="ml-2 has-text-weight-bold">Rectify</span>
+        </a>
+    </div>
+</nav>
+
+<!-- ── Upload Screen ───────────────────────────────────────────────────── -->
+<section id="upload-section" class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="hero-text has-text-centered mb-6">
+                    <h1 class="title is-2 has-text-white">
+                        Composition-Aware Cropping
+                    </h1>
+                    <p class="subtitle is-5 has-text-grey-light">
+                        Upload an image and use classical composition guides to find the perfect crop.
+                    </p>
+                </div>
+
+                <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload image">
+                    <div class="dropzone-content">
+                        <span class="icon is-large has-text-primary">
+                            <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                        </span>
+                        <p class="mt-4 has-text-weight-semibold">
+                            Drop your image here
+                        </p>
+                        <p class="is-size-7 has-text-grey-light mt-1">
+                            or click to browse — JPEG, PNG, WebP up to 10 MB
+                        </p>
+                    </div>
+                    <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.webp" hidden>
+                </div>
+
+                <div id="upload-error" class="notification is-danger is-light mt-4" style="display:none;">
+                    <button class="delete" aria-label="dismiss"></button>
+                    <span class="error-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Editor Screen ───────────────────────────────────────────────────── -->
+<section id="editor-section" class="section" style="display:none;">
+    <div class="container is-fluid">
+        <!-- Toolbar -->
+        <div class="toolbar mb-4">
+            <div class="toolbar-group">
+                <div class="field has-addons">
+                    <p class="control">
+                        <span class="button is-dark is-static">
+                            <i class="fas fa-layer-group"></i>
+                        </span>
+                    </p>
+                    <p class="control">
+                    <div class="select is-dark" id="overlay-select-wrapper">
+                        <select id="overlay-select">
+                            <option value="none">No Overlay</option>
+                            <option value="rule-of-thirds">Rule of Thirds</option>
+                            <option value="golden-spiral">Golden Spiral</option>
+                            <option value="phi-grid">Phi Grid</option>
+                            <option value="golden-triangles">Golden Triangles</option>
+                            <option value="diagonal-method">Diagonal Method</option>
+                            <option value="dynamic-symmetry">Dynamic Symmetry</option>
+                            <option value="diamond-grid">Diamond Grid</option>
+                            <option value="vanishing-point">Vanishing Point</option>
+                            <option value="center-cross">Center Cross</option>
+                            <option value="quadrants">Quadrants</option>
+                        </select>
+                    </div>
+                    </p>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <label class="label is-small has-text-grey-light mb-0">Opacity</label>
+                <input id="opacity-slider" class="slider" type="range" min="0" max="100" value="50" step="5"
+                    aria-label="Overlay opacity">
+                <span id="opacity-value" class="is-size-7 has-text-grey-light">50%</span>
+            </div>
+
+            <div class="toolbar-group">
+                <div class="field has-addons">
+                    <p class="control">
+                        <button id="btn-rotate-left" class="button is-dark" title="Rotate left 90°">
+                            <span class="icon"><i class="fas fa-undo"></i></span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-rotate-right" class="button is-dark" title="Rotate right 90°">
+                            <span class="icon"><i class="fas fa-redo"></i></span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-flip-h" class="button is-dark" title="Flip horizontal">
+                            <span class="icon"><i class="fas fa-arrows-alt-h"></i></span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-flip-v" class="button is-dark" title="Flip vertical">
+                            <span class="icon"><i class="fas fa-arrows-alt-v"></i></span>
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <div class="field has-addons">
+                    <p class="control">
+                        <button id="btn-crop" class="button is-primary" title="Apply crop">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span>Crop</span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-reset" class="button is-warning" title="Reset to original">
+                            <span class="icon"><i class="fas fa-sync-alt"></i></span>
+                            <span>Reset</span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-new" class="button is-dark" title="Upload new image">
+                            <span class="icon"><i class="fas fa-plus"></i></span>
+                            <span>New</span>
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas area -->
+        <div class="editor-canvas-wrapper">
+            <div id="editor-canvas" class="editor-canvas">
+                <img id="editor-image" src="" alt="Image being edited">
+                <!-- SVG overlay layer, positioned on top of the crop box -->
+                <svg id="overlay-svg" class="overlay-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+        </div>
+
+        <!-- Crop info bar -->
+        <div class="crop-info mt-3">
+            <span class="tag is-dark" id="info-dimensions">-</span>
+            <span class="tag is-dark" id="info-crop-size">-</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── Download modal ──────────────────────────────────────────────────── -->
+<div id="download-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Image Cropped</p>
+            <button class="delete" aria-label="close" id="modal-close"></button>
+        </header>
+        <section class="modal-card-body has-text-centered">
+            <img id="preview-image" src="" alt="Cropped preview" class="preview-img">
+        </section>
+        <footer class="modal-card-foot is-justify-content-center">
+            <a id="btn-download" class="button is-primary" href="#" download>
+                <span class="icon"><i class="fas fa-download"></i></span>
+                <span>Download</span>
+            </a>
+            <button id="btn-continue" class="button">Continue Editing</button>
+        </footer>
+    </div>
+</div>
+
+<!-- ── Loading overlay ─────────────────────────────────────────────────── -->
+<div id="loading-overlay" class="loading-overlay" style="display:none;">
+    <div class="loading-spinner"></div>
+</div>
+{% endblock %}
