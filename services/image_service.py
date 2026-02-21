@@ -15,6 +15,11 @@ from typing import Optional
 
 from PIL import Image
 
+import config
+
+# Protect against Decompression Bombs globally 
+Image.MAX_IMAGE_PIXELS = config.MAX_IMAGE_PIXELS
+
 
 @dataclass(frozen=True)
 class CropParams:

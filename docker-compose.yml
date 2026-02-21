@@ -5,6 +5,9 @@ services:
     ports:
       - "8000:8000"
     environment:
+      # Expects a reverse proxy (Nginx, Traefik, HAProxy, etc.) to handle HTTPS
+      # and inject X-Forwarded-* headers (X-Forwarded-For, X-Forwarded-Proto, etc.)
+      - APP_ENV=production
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
     tmpfs:
       - /tmp:size=64M
