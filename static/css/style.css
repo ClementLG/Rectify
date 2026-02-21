@@ -71,14 +71,24 @@ body {
     letter-spacing: 0.5px;
     color: var(--accent) !important;
     transition: color var(--transition-fast);
+    display: flex;
+    align-items: center;
 }
 
 .app-logo:hover {
     color: var(--accent-hover) !important;
 }
 
-.app-logo .fa-crop-alt {
-    font-size: 1.3rem;
+.navbar-logo {
+    width: 24px;
+    height: 24px;
+    /* Tint black SVG to accent color (#6c63ff) */
+    filter: invert(37%) sepia(80%) saturate(3000%) hue-rotate(235deg) brightness(100%) contrast(101%);
+    transition: filter var(--transition-fast);
+}
+
+.app-logo:hover .navbar-logo {
+    filter: invert(50%) sepia(60%) saturate(2000%) hue-rotate(230deg) brightness(110%) contrast(100%);
 }
 
 /* ── Upload Dropzone ──────────────────────────────────────────────────────── */
