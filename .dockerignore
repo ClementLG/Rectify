@@ -1,0 +1,41 @@
+# Version control
+.git/
+.gitignore
+
+# Python artifacts
+__pycache__/
+*.py[codz]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Uploads (ephemeral, managed by tmpfs)
+uploads/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker (avoid recursive context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation & misc
+cctp.md
+LICENSE
+*.md
+!README.md
+
+# Environment files
+.env
+.env.*
+
+# Testing & caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/

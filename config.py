@@ -14,7 +14,7 @@ BASE_DIR: Path = Path(__file__).resolve().parent
 SECRET_KEY: str = os.environ.get("SECRET_KEY", os.urandom(32).hex())
 
 # ── Upload handling ───────────────────────────────────────────────────────────
-UPLOAD_FOLDER: Path = BASE_DIR / "uploads"
+UPLOAD_FOLDER: Path = Path(os.environ.get("UPLOAD_FOLDER", str(BASE_DIR / "uploads")))
 MAX_CONTENT_LENGTH: int = 10 * 1024 * 1024  # 10 MB
 ALLOWED_EXTENSIONS: set[str] = {"png", "jpg", "jpeg", "webp"}
 

@@ -1,0 +1,21 @@
+services:
+  rectify:
+    build: .
+    container_name: rectify
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    tmpfs:
+      - /tmp:size=64M
+      - /app/uploads:size=512M,uid=1000,gid=1000,mode=0700
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
