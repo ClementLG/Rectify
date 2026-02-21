@@ -31,8 +31,10 @@ COPY --from=builder /opt/venv /opt/venv
 # Copy application code
 COPY --chown=rectify:rectify . .
 
-# Create uploads directory (will be overridden by tmpfs in docker-compose)
-RUN mkdir -p /app/uploads && chown rectify:rectify /app/uploads
+# Create uploads directory and ensure /tmp has the correct sticky-bit permissions
+RUN mkdir -p /app/uploads && \
+    chown rectify:rectify /app/uploads && \
+    chmod 1777 /tmp
 
 # Drop to non-root user
 USER rectify

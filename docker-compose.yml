@@ -14,12 +14,10 @@ services:
         target: /tmp
         tmpfs:
           size: 64M
-          mode: 1777
       - type: tmpfs
         target: /app/uploads
         tmpfs:
           size: 512M
-          mode: 0777
     read_only: true
     security_opt:
       - no-new-privileges:true
