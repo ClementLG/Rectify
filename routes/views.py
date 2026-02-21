@@ -22,3 +22,13 @@ def index() -> str:
         Rendered ``index.html`` template with the default overlay name.
     """
     return render_template("index.html", default_overlay=DEFAULT_OVERLAY)
+
+
+@views_bp.route("/about")
+def about() -> str:
+    """Render the about page.
+
+    Returns:
+        Rendered ``about.html`` template.
+    """
+    return render_template("about.html")

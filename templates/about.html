@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ── Navigation ──────────────────────────────────────────────────────── -->
+<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item app-logo" href="/">
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Rectify logo" class="navbar-logo">
+            <span class="ml-2 has-text-weight-bold">Rectify</span>
+        </a>
+    </div>
+    <div class="navbar-menu is-active is-shadowless" style="background-color: transparent;">
+        <div class="navbar-end is-flex is-align-items-center">
+            <a class="navbar-item" href="/" title="Home">
+                <span class="icon"><i class="fas fa-home fa-lg"></i></span>
+            </a>
+            <a class="navbar-item" href="https://github.com/ClementLG/Rectify" target="_blank" rel="noopener noreferrer"
+                title="GitHub">
+                <span class="icon"><i class="fab fa-github fa-lg"></i></span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── About Screen ────────────────────────────────────────────────────── -->
+<section class="section">
+    <div class="container is-max-desktop">
+
+        <div class="content">
+            <h1 class="title is-2 has-text-white mb-5">About Rectify</h1>
+
+            <div class="box has-background-dark has-text-white">
+                <h2 class="title is-4 has-text-primary">Concept</h2>
+                <p>
+                    <strong>Rectify</strong> is a precise, locally-hosted image cropping tool focused on composition.
+                    Unlike standard photo editors, Rectify overlays classical and mathematical composition guides
+                    (such as the Rule of Thirds, Golden Spiral, and Dynamic Symmetry) over your images. This allows you
+                    to crop and align your photos with artistic precision, enhancing their visual impact before
+                    exporting.
+                </p>
+            </div>
+
+            <div class="box has-background-dark has-text-white mt-5">
+                <h2 class="title is-4 has-text-primary">How to Use the Grids</h2>
+                <ol class="ml-5">
+                    <li class="mb-2"><strong>Upload an Image:</strong> Drag and drop your image onto the main screen or
+                        click to browse.</li>
+                    <li class="mb-2"><strong>Select an Overlay:</strong> Use the dropdown menu in the toolbar (<i
+                            class="fas fa-layer-group"></i>) to pick a composition guide.</li>
+                    <li class="mb-2"><strong>Adjust Settings:</strong> Change the grid's opacity using the slider and
+                        customize the color to ensure it contrasts well with your photo.</li>
+                    <li class="mb-2"><strong>Crop & Transform:</strong> Drag the crop handles to frame your subject. You
+                        can lock the aspect ratio, rotate, or mirror the image using the toolbar buttons.</li>
+                    <li><strong>Export:</strong> Click the Export button to save the resulting image in your preferred
+                        quality.</li>
+                </ol>
+            </div>
+
+            <div class="box has-background-dark has-text-white mt-5">
+                <h2 class="title is-4 has-text-danger">Disclaimer of Liability</h2>
+                <p class="is-size-7 has-text-grey-light" style="line-height: 1.6;">
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                    SOFTWARE.
+                    <br><br>
+                    By using this application, you acknowledge and agree that the developers and contributors of this
+                    project hold no legal responsibility for any data loss, damages, or legal implications resulting
+                    from the uploaded content or the usage of this software. You are solely responsible for ensuring you
+                    have the right to process
+                    the images uploaded to this platform.
+                </p>
+            </div>
+
+            <div class="has-text-centered mt-6">
+                <a class="button is-primary is-medium" href="/">
+                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                    <span>Back to Editor</span>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}
