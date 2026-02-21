@@ -2,13 +2,13 @@ services:
   rectify:
     build: .
     container_name: rectify
-    ports:
-      - "8000:8000"
+    #ports:
+    #  - "8000:8000" #uncomment for public access or local dev
     environment:
       # Expects a reverse proxy (Nginx, Traefik, HAProxy, etc.) to handle HTTPS
       # and inject X-Forwarded-* headers (X-Forwarded-For, X-Forwarded-Proto, etc.)
-      - APP_ENV=production
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - APP_ENV=production # Set to development for local dev
+      #- SECRET_KEY=${SECRET_KEY:-change-me-in-production} # Set up your own secret key for production. Random is generated at build time if not provided.
     tmpfs:
       - /tmp:size=64M
       - /app/uploads:size=512M,uid=1000,gid=1000,mode=0700
