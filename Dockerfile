@@ -43,6 +43,6 @@ USER rectify
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"
+    CMD python -c "import urllib.request; req = urllib.request.Request('http://localhost:8000/', headers={'X-Forwarded-Proto': 'https'}); urllib.request.urlopen(req)"
 
 CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:create_app()"]
