@@ -15,13 +15,11 @@ services:
         tmpfs:
           size: 64M
           mode: 1777
-          uid: 1000
-          gid: 1000
       - type: tmpfs
         target: /app/uploads
         tmpfs:
           size: 512M
-          mode: 0700
+          mode: 0777
     read_only: true
     security_opt:
       - no-new-privileges:true
