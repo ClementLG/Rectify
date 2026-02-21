@@ -12,8 +12,34 @@
 
 const Overlays = (() => {
 
-    const STROKE_COLOR = "rgba(108, 99, 255, 0.7)";
+    let STROKE_COLOR = "rgba(108, 99, 255, 0.7)";
     const STROKE_WIDTH = 1.5;
+
+    /**
+     * Convert a hex colour (#rrggbb) to an RGBA string with the given alpha.
+     * @param {string} hex
+     * @param {number} [alpha=0.7]
+     * @returns {string}
+     */
+    function hexToRgba(hex, alpha = 0.7) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    /**
+     * Set the overlay stroke colour from a hex value.
+     * @param {string} hex - e.g. "#ff0000"
+     */
+    function setColor(hex) {
+        STROKE_COLOR = hexToRgba(hex, 0.7);
+    }
+
+    /** @returns {string} Current RGBA stroke colour. */
+    function getColor() {
+        return STROKE_COLOR;
+    }
 
     /**
      * Create an SVG line element as a string.
@@ -281,5 +307,5 @@ const Overlays = (() => {
         return Object.keys(registry);
     }
 
-    return { render, list };
+    return { render, list, setColor, getColor };
 })();

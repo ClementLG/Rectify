@@ -58,10 +58,11 @@
     <div class="container is-fluid">
         <!-- Toolbar -->
         <div class="toolbar mb-4">
+            <!-- Overlay selector group -->
             <div class="toolbar-group">
                 <div class="field has-addons">
                     <p class="control">
-                        <span class="button is-dark is-static">
+                        <span class="button is-dark is-static btn-select-addon">
                             <i class="fas fa-layer-group"></i>
                         </span>
                     </p>
@@ -85,6 +86,9 @@
                 </div>
             </div>
 
+            <div class="toolbar-divider"></div>
+
+            <!-- Opacity slider group -->
             <div class="toolbar-group">
                 <label class="label is-small has-text-grey-light mb-0">Opacity</label>
                 <input id="opacity-slider" class="slider" type="range" min="0" max="100" value="50" step="5"
@@ -92,47 +96,69 @@
                 <span id="opacity-value" class="is-size-7 has-text-grey-light">50%</span>
             </div>
 
+            <div class="toolbar-divider"></div>
+
+            <!-- Grid color picker -->
+            <div class="toolbar-group">
+                <label class="label is-small has-text-grey-light mb-0">Color</label>
+                <div class="color-picker-wrapper">
+                    <input id="grid-color-picker" type="color" value="#6c63ff" title="Grid color"
+                        aria-label="Overlay color">
+                </div>
+            </div>
+
+            <div class="toolbar-divider"></div>
+
+            <!-- Transform group -->
             <div class="toolbar-group">
                 <div class="field has-addons">
                     <p class="control">
-                        <button id="btn-rotate-left" class="button is-dark" title="Rotate left 90°">
-                            <span class="icon"><i class="fas fa-undo"></i></span>
+                        <button id="btn-rotate-left" class="button is-dark btn-icon" title="Rotate left 90°">
+                            <i class="fas fa-undo"></i>
                         </button>
                     </p>
                     <p class="control">
-                        <button id="btn-rotate-right" class="button is-dark" title="Rotate right 90°">
-                            <span class="icon"><i class="fas fa-redo"></i></span>
+                        <button id="btn-rotate-right" class="button is-dark btn-icon" title="Rotate right 90°">
+                            <i class="fas fa-redo"></i>
                         </button>
                     </p>
                     <p class="control">
-                        <button id="btn-flip-h" class="button is-dark" title="Flip horizontal">
-                            <span class="icon"><i class="fas fa-arrows-alt-h"></i></span>
+                        <button id="btn-flip-h" class="button is-dark btn-icon" title="Flip horizontal">
+                            <i class="fas fa-arrows-alt-h"></i>
                         </button>
                     </p>
                     <p class="control">
-                        <button id="btn-flip-v" class="button is-dark" title="Flip vertical">
-                            <span class="icon"><i class="fas fa-arrows-alt-v"></i></span>
+                        <button id="btn-flip-v" class="button is-dark btn-icon" title="Flip vertical">
+                            <i class="fas fa-arrows-alt-v"></i>
                         </button>
                     </p>
                 </div>
             </div>
 
+            <div class="toolbar-divider"></div>
+
+            <!-- Actions group -->
             <div class="toolbar-group">
                 <div class="field has-addons">
                     <p class="control">
-                        <button id="btn-crop" class="button is-primary" title="Apply crop">
-                            <span class="icon"><i class="fas fa-check"></i></span>
-                            <span>Crop</span>
+                        <button id="btn-lock-ratio" class="button is-dark btn-icon" title="Lock aspect ratio (L)">
+                            <i class="fas fa-lock-open"></i>
                         </button>
                     </p>
                     <p class="control">
-                        <button id="btn-reset" class="button is-warning" title="Reset to original">
+                        <button id="btn-crop" class="button is-primary btn-action" title="Export image">
+                            <span class="icon"><i class="fas fa-file-export"></i></span>
+                            <span>Export</span>
+                        </button>
+                    </p>
+                    <p class="control">
+                        <button id="btn-reset" class="button is-dark btn-action" title="Reset to original">
                             <span class="icon"><i class="fas fa-sync-alt"></i></span>
                             <span>Reset</span>
                         </button>
                     </p>
                     <p class="control">
-                        <button id="btn-new" class="button is-dark" title="Upload new image">
+                        <button id="btn-new" class="button is-dark btn-action" title="Upload new image">
                             <span class="icon"><i class="fas fa-plus"></i></span>
                             <span>New</span>
                         </button>
@@ -163,11 +189,27 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Image Cropped</p>
+            <p class="modal-card-title">Export Image</p>
             <button class="delete" aria-label="close" id="modal-close"></button>
         </header>
         <section class="modal-card-body has-text-centered">
             <img id="preview-image" src="" alt="Cropped preview" class="preview-img">
+
+            <!-- Quality selector -->
+            <div class="quality-control mt-5">
+                <div class="quality-row">
+                    <label class="label is-small has-text-grey-light mb-0">Export Quality</label>
+                    <div class="quality-slider-wrapper">
+                        <input id="quality-slider" class="slider" type="range" min="1" max="100" value="100" step="1"
+                            aria-label="Export quality">
+                        <span id="quality-value" class="is-size-7 has-text-grey-light">100%</span>
+                    </div>
+                </div>
+                <p class="is-size-7 has-text-grey mt-1">
+                    <i class="fas fa-info-circle"></i>
+                    PNG is always lossless — quality only affects JPEG &amp; WebP.
+                </p>
+            </div>
         </section>
         <footer class="modal-card-foot is-justify-content-center">
             <a id="btn-download" class="button is-primary" href="#" download>

@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnRotateRight = document.getElementById("btn-rotate-right");
     const btnFlipH = document.getElementById("btn-flip-h");
     const btnFlipV = document.getElementById("btn-flip-v");
+    const btnLockRatio = document.getElementById("btn-lock-ratio");
+    const gridColorPicker = document.getElementById("grid-color-picker");
     const btnCrop = document.getElementById("btn-crop");
     const btnReset = document.getElementById("btn-reset");
     const btnNew = document.getElementById("btn-new");
@@ -36,6 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnDownload = document.getElementById("btn-download");
     const btnContinue = document.getElementById("btn-continue");
     const modalClose = document.getElementById("modal-close");
+    const qualitySlider = document.getElementById("quality-slider");
+    const qualityValue = document.getElementById("quality-value");
 
     // ── State ───────────────────────────────────────────────────────────
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content || "";
@@ -45,6 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentSessionId = null;
     let originalWidth = 0;
     let originalHeight = 0;
+    let aspectLocked = false;
+    let lastCropPayload = null;  // stored for quality re-export
 
     // ── Helpers ─────────────────────────────────────────────────────────
 
@@ -175,6 +181,11 @@ document.addEventListener("DOMContentLoaded", () => {
         opacitySlider.value = 50;
         opacityValue.textContent = "50%";
 
+        // Reset lock state
+        aspectLocked = false;
+        btnLockRatio.classList.remove("is-active");
+        btnLockRatio.querySelector("i").className = "fas fa-lock-open";
+
         CropperManager.init(editorImage, () => {
             updateOverlay();
         });
@@ -245,9 +256,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btnReset.addEventListener("click", () => {
         CropperManager.reset();
+        // Reset lock state on reset
+        aspectLocked = false;
+        btnLockRatio.classList.remove("is-active");
+        btnLockRatio.querySelector("i").className = "fas fa-lock-open";
     });
 
     btnNew.addEventListener("click", switchToUpload);
+
+    // ── Lock Aspect Ratio ───────────────────────────────────────────────
+
+    function toggleAspectLock() {
+        aspectLocked = !aspectLocked;
+        if (aspectLocked) {
+            const data = CropperManager.getData(true);
+            if (data && data.width && data.height) {
+                CropperManager.setAspectRatio(data.width / data.height);
+            }
+            btnLockRatio.classList.add("is-active");
+            btnLockRatio.querySelector("i").className = "fas fa-lock";
+        } else {
+            CropperManager.setAspectRatio(NaN);
+            btnLockRatio.classList.remove("is-active");
+            btnLockRatio.querySelector("i").className = "fas fa-lock-open";
+        }
+    }
+
+    btnLockRatio.addEventListener("click", toggleAspectLock);
+
+    // ── Grid Color Picker ───────────────────────────────────────────────
+
+    gridColorPicker.addEventListener("input", () => {
+        Overlays.setColor(gridColorPicker.value);
+        updateOverlay();
+    });
 
     // ── Crop & Download ─────────────────────────────────────────────────
 
@@ -264,7 +306,11 @@ document.addEventListener("DOMContentLoaded", () => {
             rotate: data.rotate || 0,
             flipH: data.scaleX === -1,
             flipV: data.scaleY === -1,
+            quality: 100,
         };
+
+        // Store for potential re-export at different quality
+        lastCropPayload = { ...payload };
 
         showLoading();
 
@@ -282,6 +328,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
+                // Reset quality slider to maximum
+                qualitySlider.value = 100;
+                qualityValue.textContent = "100%";
+
                 // Show preview modal
                 const downloadUrl = `/api/download/${result.session_id}/${result.filename}`;
                 previewImage.src = downloadUrl;
@@ -296,6 +346,55 @@ document.addEventListener("DOMContentLoaded", () => {
                 hideLoading();
                 showError("Crop failed. Please try again.");
                 console.error("Crop error:", err);
+            });
+    });
+
+    // ── Quality Slider ──────────────────────────────────────────────────
+
+    qualitySlider.addEventListener("input", () => {
+        qualityValue.textContent = qualitySlider.value + "%";
+    });
+
+    /**
+     * When the user clicks Download, re-crop at the chosen quality
+     * (if quality < 100) to produce a smaller file, then trigger download.
+     */
+    btnDownload.addEventListener("click", (e) => {
+        const chosenQuality = parseInt(qualitySlider.value, 10);
+
+        // If quality is already 100, the current file is fine — let the
+        // default <a href download> behaviour handle it.
+        if (chosenQuality >= 100 || !lastCropPayload) return;
+
+        e.preventDefault();
+        showLoading();
+
+        const reExportPayload = { ...lastCropPayload, quality: chosenQuality };
+
+        apiFetch("/api/crop", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(reExportPayload),
+        })
+            .then(res => res.json())
+            .then(result => {
+                hideLoading();
+                if (result.error) {
+                    console.error("Re-export error:", result.error);
+                    return;
+                }
+                // Trigger download of the re-exported file
+                const url = `/api/download/${result.session_id}/${result.filename}`;
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = result.filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(err => {
+                hideLoading();
+                console.error("Re-export error:", err);
             });
     });
 
@@ -341,6 +440,10 @@ document.addEventListener("DOMContentLoaded", () => {
             case "v":
                 e.preventDefault();
                 CropperManager.flipVertical();
+                break;
+            case "l":
+                e.preventDefault();
+                toggleAspectLock();
                 break;
             case "Escape":
                 if (downloadModal.classList.contains("is-active")) {

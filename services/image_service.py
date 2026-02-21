@@ -37,6 +37,7 @@ class CropParams:
     rotate: float = 0.0
     flip_h: bool = False
     flip_v: bool = False
+    quality: int = 100
 
 
 class ImageService:
@@ -125,19 +126,20 @@ class ImageService:
             # 3. Flip
             img = cls.flip(img, params.flip_h, params.flip_v)
 
-            # Save with high quality
+            # Save with user-chosen quality (clamped 1–100)
+            q = max(1, min(100, params.quality))
             ext = source_path.suffix.lower()
             out_name = f"cropped_{uuid.uuid4().hex[:8]}{ext}"
             out_path = output_dir / out_name
 
             save_kwargs: dict = {}
             if ext in (".jpg", ".jpeg"):
-                save_kwargs["quality"] = 95
+                save_kwargs["quality"] = q
                 save_kwargs["subsampling"] = 0
             elif ext == ".png":
-                save_kwargs["compress_level"] = 6
+                save_kwargs["compress_level"] = 6  # lossless, quality N/A
             elif ext == ".webp":
-                save_kwargs["quality"] = 95
+                save_kwargs["quality"] = q
 
             img.save(out_path, **save_kwargs)
             return out_path

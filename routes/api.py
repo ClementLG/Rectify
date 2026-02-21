@@ -126,6 +126,7 @@ def crop() -> tuple[Any, int]:
         rotate=float(data.get("rotate", 0)),
         flip_h=bool(data.get("flipH", False)),
         flip_v=bool(data.get("flipV", False)),
+        quality=max(1, min(100, int(data.get("quality", 100)))),
     )
 
     result_path: Path = ImageService.process(source_path, params, session_dir)

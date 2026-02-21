@@ -142,6 +142,15 @@ const CropperManager = (() => {
     }
 
     /**
+     * Set the aspect ratio of the crop box.
+     * @param {number} ratio - width / height. Use NaN for free crop.
+     */
+    function setAspectRatio(ratio) {
+        if (!cropper) return;
+        cropper.setAspectRatio(ratio);
+    }
+
+    /**
      * Get the cropped canvas as a Blob.
      *
      * @param {string} [type="image/png"] - MIME type.
@@ -183,6 +192,7 @@ const CropperManager = (() => {
         flipHorizontal,
         flipVertical,
         reset,
+        setAspectRatio,
         getCroppedBlob,
         replace,
         isActive,
