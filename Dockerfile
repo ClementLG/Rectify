@@ -16,6 +16,7 @@ FROM python:3.12-slim AS runtime
 # Prevent Python from writing .pyc files and enable unbuffered stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    TMPDIR="/tmp" \
     PATH="/opt/venv/bin:$PATH"
 
 # Create non-root user
