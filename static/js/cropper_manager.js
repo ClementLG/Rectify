@@ -105,6 +105,15 @@ const CropperManager = (() => {
     }
 
     /**
+     * Rotate the image to an absolute angle.
+     * @param {number} degree - Degree to rotate to.
+     */
+    function rotateTo(degree) {
+        if (!cropper) return;
+        cropper.rotateTo(degree);
+    }
+
+    /**
      * Rotate the image by the given number of degrees.
      * @param {number} degrees - Degrees to rotate (positive = clockwise visually).
      */
@@ -198,6 +207,7 @@ const CropperManager = (() => {
         getCanvasData,
         getCropBoxData,
         rotate,
+        rotateTo,
         flipHorizontal,
         flipVertical,
         reset,

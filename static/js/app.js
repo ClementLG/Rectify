@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlaySelect = document.getElementById("overlay-select");
     const opacitySlider = document.getElementById("opacity-slider");
     const opacityValue = document.getElementById("opacity-value");
+    const rotationSlider = document.getElementById("rotation-slider");
+    const rotationValue = document.getElementById("rotation-value");
     const btnRotateLeft = document.getElementById("btn-rotate-left");
     const btnRotateRight = document.getElementById("btn-rotate-right");
     const btnFlipH = document.getElementById("btn-flip-h");
@@ -184,6 +186,10 @@ document.addEventListener("DOMContentLoaded", () => {
         opacitySlider.value = 50;
         opacityValue.textContent = "50%";
 
+        // Reset rotation slider
+        rotationSlider.value = 0;
+        rotationValue.textContent = "0°";
+
         // Reset lock state
         aspectLocked = false;
         btnLockRatio.classList.remove("is-active");
@@ -229,6 +235,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = CropperManager.getData(true);
         if (data) {
             infoCropSize.textContent = `Crop: ${data.width} × ${data.height}`;
+
+            // Sync rotation slider if not actively dragging it
+            if (document.activeElement !== rotationSlider) {
+                let deg = data.rotate || 0;
+                // Normalize to -179...180 range
+                deg = ((deg % 360) + 360) % 360;
+                if (deg > 180) deg -= 360;
+
+                rotationSlider.value = deg;
+                rotationValue.textContent = deg + "°";
+            }
         }
     }
 
@@ -239,6 +256,12 @@ document.addEventListener("DOMContentLoaded", () => {
     opacitySlider.addEventListener("input", () => {
         opacityValue.textContent = opacitySlider.value + "%";
         overlaySvg.style.opacity = parseInt(opacitySlider.value, 10) / 100;
+    });
+
+    rotationSlider.addEventListener("input", () => {
+        const degree = parseInt(rotationSlider.value, 10);
+        rotationValue.textContent = degree + "°";
+        CropperManager.rotateTo(degree);
     });
 
     btnRotateLeft.addEventListener("click", () => {
